@@ -1,0 +1,31 @@
+/* src/index.css */
+@import "tailwindcss";
+
+/* Tailwind v4 Theme Configuration */
+@theme {
+  --font-sans: 'Inter', sans-serif;
+
+  /* Dark background tone similar to zangwei.dev */
+  --color-neutral-950: #0a0a0a;
+}
+
+/* Enable dark variant */
+@variant dark (&:where(.dark, .dark *));
+
+/* Global Styles */
+body {
+  font-family: var(--font-sans);
+  @apply bg-white text-black transition-colors duration-300;
+  @apply dark:bg-neutral-950 dark:text-white;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
