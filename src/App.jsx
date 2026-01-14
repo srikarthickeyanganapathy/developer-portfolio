@@ -11,7 +11,7 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950 text-gray-900 dark:text-gray-100 antialiased">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-6 py-12 md:py-20">
+      <main className="max-w-6xl mx-auto px-6 py-12 md:py-20">
         {children}
       </main>
     </div>
