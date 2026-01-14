@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, NotebookText, User, Moon, Sun } from "lucide-react";
+import { Home, NotebookText, User, Moon, Sun, FileText, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState("EN");
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -38,6 +37,7 @@ const Navbar = () => {
     { name: "Home", path: "/", icon: Home },
     { name: "Projects", path: "/projects", icon: NotebookText },
     { name: "Skills", path: "/skills", icon: User },
+    { name: "Contact", path: "/contact", icon: MessageCircle },
   ];
 
   const buttonBaseClass =
@@ -102,7 +102,6 @@ const Navbar = () => {
                       isActive ? activeClass : inactiveClass
                     }`}
                   >
-                    {/* Icon */}
                     <link.icon className="size-4 relative z-10" />
 
                     {/* ACTIVE GLOW UNDERLINE */}
@@ -135,6 +134,29 @@ const Navbar = () => {
                 </motion.div>
               );
             })}
+
+            {/* Divider */}
+            <div className="mx-2 h-6 w-px bg-gray-200 dark:bg-white/10" />
+
+            {/* RESUME BUTTON */}
+            <motion.div
+              onMouseEnter={() => setHoveredIndex(99)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              whileHover={{ scale: 1.15, marginLeft: 10, marginRight: 10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="flex items-center justify-center"
+              style={{ width: 40, height: 40 }}
+            >
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="View Resume"
+                className={`${buttonBaseClass} ${inactiveClass}`}
+              >
+                <FileText className="size-4" />
+              </a>
+            </motion.div>
 
             {/* Divider */}
             <div className="mx-2 h-6 w-px bg-gray-200 dark:bg-white/10" />

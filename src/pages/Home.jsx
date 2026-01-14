@@ -31,7 +31,7 @@ function FloatingPortrait() {
         <img
           src={profileImage}
           alt="Sri Karthickeyan Ganapathy"
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+          className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-500"
         />
 
         {/* Hover Overlay */}
@@ -85,7 +85,7 @@ export default function Home() {
                     <Github size={24} />
                 </a>
                 <a
-                    href="https://linkedin.com"
+                    href="https://www.linkedin.com/in/sri-karthickeyan-ganapathy-597773261/"
                     target="_blank"
                     className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                 >
@@ -172,13 +172,28 @@ export default function Home() {
         </motion.section>
 
         {/* Action */}
-        <motion.div variants={fadeUp}>
-            <Link
+        <motion.div
+          variants={fadeUp}
+          className="flex flex-col sm:flex-row gap-6 items-start"
+        >
+          <Link
             to="/projects"
             className="inline-flex items-center gap-3 text-base font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
+          >
             View Selected Work <ArrowRight size={18} />
-            </Link>
+          </Link>
+
+          <Link
+            to="/contact"
+            className="
+              inline-flex items-center gap-3 text-base font-medium
+              text-gray-600 dark:text-gray-400
+              hover:text-indigo-600 dark:hover:text-indigo-400
+              transition-colors
+            "
+          >
+            Get in Touch <Mail size={20} />
+          </Link>
         </motion.div>
     </motion.div>
   );

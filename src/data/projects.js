@@ -52,7 +52,7 @@ export const projects = [
       "Implementing the FIFO (First-In-First-Out) redemption logic for assets was complex to sync between a SQL database and the blockchain. Additionally, early gas costs were too high, forcing me to optimize the smart contract code to reduce transaction fees.",
     learned:
       "I learned that Blockchain engineering is mostly system architecture—balancing the immutable ledger with mutable business data. I also gained deep experience integrating enterprise Java systems with EVM-based networks.",
-    github: "https://github.com/srikarthickeyanganapathy",
+    github: "https://github.com/srikarthickeyanganapathy/Aug_project_backend",
     demo: null
   },
 
@@ -78,7 +78,7 @@ export const projects = [
       "Integration was again the main hurdle—coordinating data flow between a standard Node.js backend, a Python analytics service, and the Ethereum blockchain. I also realized during development that a public blockchain isn't ideal for data privacy, highlighting the need for private chains in real enterprise use cases.",
     learned:
       "I learned how to design architectures specifically for 'Trustless' environments and gained a realistic understanding of where blockchain adds value versus where it adds unnecessary complexity.",
-    github: "https://github.com/srikarthickeyanganapathy",
+    github: "https://github.com/srikarthickeyanganapathy/Decentralized-Predictive-Maintenance",
     demo: null
   }
 ];
