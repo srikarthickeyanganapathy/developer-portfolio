@@ -1,59 +1,104 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Preloader from "./components/Preloader";
+import HeroSection from "./components/HeroSection";
+import AboutSection from "./components/AboutSection";
+import AboutToProjectsTransition from "./components/AboutToProjectsTransition";
+import ProjectsSection from "./components/ProjectsSection";
+import BirdTransition from "./components/BirdTransition";
+import ContactSection from "./components/ContactSection";
+import ProjectOverlay from "./components/ProjectOverlay";
+import CustomCursor from "./components/CustomCursor";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Projects from "./pages/Projects";
-import Skills from "./pages/Skills";
-import Contact from "./pages/Contact";
-import ProjectDetail from "./pages/ProjectDetail";
 
-function Layout({ children }) {
-  return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950 text-gray-900 dark:text-gray-100 antialiased">
-      <Navbar />
-      <main className="max-w-6xl mx-auto px-6 py-12 md:py-20">
-        {children}
-      </main>
-    </div>
-  );
-}
-
-const pageTransition = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-  transition: { duration: 0.3, ease: "easeOut" },
-};
+gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [activeSection, setActiveSection] = useState(0);
+  const mainRef = useRef(null);
+  const aboutRef = useRef(null);
+  const projectsRef = useRef(null);
+
+  const handlePreloaderComplete = useCallback(() => {
+    setLoading(false);
+  }, []);
+
+  const handleProjectClick = useCallback((project) => {
+    setSelectedProject(project);
+  }, []);
+
+  const handleOverlayClose = useCallback(() => {
+    setSelectedProject(null);
+  }, []);
+
+  const handleNavigate = useCallback((index) => {
+    const sections = ["#hero", ".section--about", "#projects", "#contact"];
+    const target = sections[index];
+    if (target) {
+      const el = document.querySelector(target);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, []);
+
+  // Set up ScrollTrigger for App transitions and Navbar active state
+  useEffect(() => {
+    if (!loading && mainRef.current) {
+      const ctx = gsap.context(() => {
+        const sections = gsap.utils.toArray('main > section');
+
+        sections.forEach((section, i) => {
+          // Update active section for Navbar
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top center",
+            end: "bottom center",
+            onToggle: (self) => {
+              if (self.isActive) setActiveSection(i);
+            }
+          });
+        });
+
+        // Delay to ensure layout is ready after DOM paints
+        setTimeout(() => ScrollTrigger.refresh(), 300);
+      }, mainRef);
+
+      return () => ctx.revert();
+    }
+  }, [loading]);
+
   return (
-    <Router>
-      <Layout>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route
-              path="/"
-              element={<motion.div {...pageTransition}><Home /></motion.div>}
-            />
-            <Route
-              path="/projects"
-              element={<motion.div {...pageTransition}><Projects /></motion.div>}
-            />
-            <Route
-              path="/projects/:slug"
-              element={<motion.div {...pageTransition}><ProjectDetail /></motion.div>}
-            />
-            <Route
-              path="/skills"
-              element={<motion.div {...pageTransition}><Skills /></motion.div>}
-            />
-            <Route
-              path="/contact"
-              element={<motion.div {...pageTransition}><Contact /></motion.div>}
-            />
-          </Routes>
+    <>
+      <CustomCursor />
+      <Navbar activeSection={activeSection} onNavigate={handleNavigate} />
+
+      <div className="noise relative min-h-screen bg-[var(--warm-black)] text-[var(--warm-white)] overflow-x-hidden">
+        <AnimatePresence>
+          {loading && <Preloader onComplete={handlePreloaderComplete} />}
         </AnimatePresence>
-      </Layout>
-    </Router>
+
+        {!loading && (
+          <main ref={mainRef} className="relative z-10">
+            <HeroSection visible={!loading} />
+            <AboutSection ref={aboutRef} />
+            <AboutToProjectsTransition aboutRef={aboutRef} projectsRef={projectsRef} />
+            <ProjectsSection ref={projectsRef} onProjectClick={handleProjectClick} />
+            <BirdTransition />
+            <ContactSection />
+          </main>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectOverlay project={selectedProject} onClose={handleOverlayClose} />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
