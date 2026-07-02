@@ -50,8 +50,6 @@ export async function handler(event) {
   if (!name || !email || !message) {
     return { statusCode: 400, body: JSON.stringify({ error: "Name, email, and message are all required." }) };
   }
-  // Basic email sanity check — Gmail API will reject malformed addresses anyway,
-  // but this gives a friendlier error before we spend a network round-trip.
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { statusCode: 400, body: JSON.stringify({ error: "That email address doesn't look right." }) };
   }

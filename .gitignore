@@ -30,3 +30,7 @@ dist-ssr
 /config
 /claude.md
 .claudeignore
+# Local Netlify folder
+.netlify
+
+deno.lock
