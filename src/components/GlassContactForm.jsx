@@ -47,7 +47,8 @@ function GlowField({ id, label, value, onChange, type = "text", isTextarea = fal
 
 export default function GlassContactForm() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState("idle"); // idle, submitting, success
+  const [status, setStatus] = useState("idle"); // idle, submitting, success, error
+  const [errorMsg, setErrorMsg] = useState("");
   const buttonRef = useRef(null);
   const [isTouch, setIsTouch] = useState(false);
 
@@ -69,18 +70,34 @@ export default function GlassContactForm() {
     if (touch || reducedMotion) setIsTouch(true);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
+    setErrorMsg("");
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const res = await fetch("/.netlify/functions/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Something went wrong sending your message.");
+      }
+
       setStatus("success");
       setTimeout(() => {
         setStatus("idle");
         setFormData({ name: "", email: "", message: "" });
       }, 3000);
-    }, 1500);
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(err.message || "Couldn't send your message. Please try again or email me directly.");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
   };
 
   const handleMouseMove = (e) => {
@@ -154,17 +171,21 @@ export default function GlassContactForm() {
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
         />
 
+        {status === "error" && (
+          <p className="text-xs text-red-400/90 font-mono -mt-2">{errorMsg}</p>
+        )}
+
         <div className="flex justify-end pt-2">
           <motion.button
             ref={buttonRef}
             type="submit"
-            disabled={status !== "idle"}
+            disabled={status === "submitting"}
             data-cursor-text="Send"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ x: isTouch ? 0 : springX, y: isTouch ? 0 : springY }}
-            whileHover={!isTouch && status === "idle" ? { scale: 1.05 } : {}}
-            whileTap={!isTouch && status === "idle" ? { scale: 0.95 } : {}}
+            whileHover={!isTouch && status !== "submitting" ? { scale: 1.05 } : {}}
+            whileTap={!isTouch && status !== "submitting" ? { scale: 0.95 } : {}}
             className="glass-chip relative overflow-hidden group px-8 py-4 rounded-full font-mono text-sm tracking-widest text-[var(--warm-white)] transition-colors duration-300 hover:text-[var(--accent)] hover:border-[var(--accent)]/40 disabled:opacity-50"
           >
             {/* Cursor-following radial glow */}
@@ -175,7 +196,7 @@ export default function GlassContactForm() {
               />
             )}
             <span className="relative z-10">
-              {status === "submitting" ? "SENDING..." : "SEND MESSAGE"}
+              {status === "submitting" ? "SENDING..." : status === "error" ? "TRY AGAIN" : "SEND MESSAGE"}
             </span>
           </motion.button>
         </div>
