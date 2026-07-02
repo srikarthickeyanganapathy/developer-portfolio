@@ -66,6 +66,7 @@ export default function InteractiveFolderGallery({ onProjectClick }) {
           <div key={project.id} className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: isZoomed ? 50 : idx + 10 }}>
             <motion.div
               className={`relative w-[240px] sm:w-[320px] h-[300px] sm:h-[360px] rounded-xl overflow-hidden glass-panel cursor-pointer shadow-2xl border border-white/20 bg-white/10 ${isOpen && !isTouch ? 'glass-hover' : ''} pointer-events-auto`}
+              data-cursor-text={isOpen ? "View" : undefined}
               initial={false}
               animate={isZoomed ? {
                 x: 0,
@@ -119,6 +120,7 @@ export default function InteractiveFolderGallery({ onProjectClick }) {
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40" style={{ top: '100px' }}>
         <motion.div 
           className="relative w-[280px] sm:w-[400px] md:w-[500px] h-[200px] sm:h-[250px] rounded-xl bg-[rgba(255,255,255,0.06)] backdrop-blur-2xl border border-[rgba(255,255,255,0.15)] shadow-2xl origin-bottom flex items-center justify-center cursor-pointer pointer-events-auto"
+          data-cursor-text={isOpen ? "Close" : "Open"}
           animate={{ rotateX: isOpen ? 60 : 0, y: isOpen ? 20 : 0 }}
           transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
           onClick={() => setIsOpen(!isOpen)}

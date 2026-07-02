@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Mail, Github, Linkedin, ExternalLink, ArrowUpRight } from "lucide-react";
+import { Mail, Github, Linkedin, ExternalLink, ArrowUpRight, Copy, Check } from "lucide-react";
 import GlassContactForm from "./GlassContactForm";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -49,6 +49,17 @@ export default function ContactSection() {
   const contentRef = useRef(null);
   const trailRef = useRef(null);
   const [animated, setAnimated] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText("srikarthickeyang@gmail.com");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // Clipboard API unavailable — no-op, mailto link still works
+    }
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -186,10 +197,16 @@ export default function ContactSection() {
       {/* Main content */}
       <div ref={contentRef} className="mx-auto max-w-[1200px] w-full px-6 sm:px-10 lg:px-16 py-20 sm:py-28 relative z-10">
 
-        {/* Eyebrow */}
-        <p className="contact-animate font-mono text-[10px] uppercase tracking-[0.4em] text-[var(--warm-dim)] mb-8">
-          Contact
-        </p>
+        {/* Eyebrow + availability */}
+        <div className="contact-animate flex items-center gap-4 mb-8">
+          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-[var(--warm-dim)]">
+            Contact
+          </p>
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+            Available for work
+          </span>
+        </div>
 
         {/* Heading */}
         <div className="contact-animate mb-14">
@@ -215,24 +232,40 @@ export default function ContactSection() {
           {/* Links */}
           <div className="space-y-3 contact-animate z-20">
             {links.map(({ label, value, href, icon: Icon }) => (
-              <a
+              <div
                 key={label}
-                href={href}
-                target={href.startsWith("mailto") ? undefined : "_blank"}
-                rel="noreferrer"
                 className="flex items-center justify-between py-4 border-b border-[var(--warm-white)]/[0.05] group hover:translate-x-1 transition-transform duration-500 glass-hover px-4 rounded-lg -mx-4"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full glass-chip flex items-center justify-center group-hover:border-[var(--accent)]/30 transition-colors duration-500">
+                <a
+                  href={href}
+                  target={href.startsWith("mailto") ? undefined : "_blank"}
+                  rel="noreferrer"
+                  className="flex items-center gap-4 flex-1 min-w-0"
+                >
+                  <div className="w-10 h-10 rounded-full glass-chip flex items-center justify-center group-hover:border-[var(--accent)]/30 transition-colors duration-500 flex-shrink-0">
                     <Icon size={16} strokeWidth={1.5} className="text-[var(--warm-dim)] group-hover:text-[var(--accent)] transition-colors duration-500" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-mono text-[9px] uppercase tracking-widest text-[var(--warm-dim)]">{label}</p>
-                    <p className="text-sm text-[var(--warm-muted)] group-hover:text-[var(--warm-white)] transition-colors duration-500">{value}</p>
+                    <p className="text-sm text-[var(--warm-muted)] group-hover:text-[var(--warm-white)] transition-colors duration-500 truncate">{value}</p>
                   </div>
-                </div>
-                <ArrowUpRight size={14} className="text-[var(--warm-dim)] group-hover:text-[var(--accent)] transition-colors duration-500" />
-              </a>
+                </a>
+
+                {label === "Email" ? (
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    aria-label="Copy email address"
+                    className="ml-3 flex-shrink-0 text-[var(--warm-dim)] hover:text-[var(--accent)] transition-colors duration-300"
+                  >
+                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                  </button>
+                ) : (
+                  <a href={href} target={href.startsWith("mailto") ? undefined : "_blank"} rel="noreferrer" className="ml-3 flex-shrink-0">
+                    <ArrowUpRight size={14} className="text-[var(--warm-dim)] group-hover:text-[var(--accent)] transition-colors duration-500" />
+                  </a>
+                )}
+              </div>
             ))}
           </div>
         </div>

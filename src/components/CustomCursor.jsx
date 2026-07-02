@@ -1,13 +1,24 @@
-import { useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 
+/**
+ * Custom cursor with a dot + ring, that MORPHS on hover:
+ * - Grows and shows a short label when hovering an element with
+ *   a `data-cursor-text="View"` (or similar) attribute.
+ * - Falls back to a plain enlarged ring for generic links/buttons.
+ *
+ * Usage on any element you want a labeled cursor for:
+ *   <a href="..." data-cursor-text="View">...</a>
+ *   <button data-cursor-text="Talk">...</button>
+ */
 export default function CustomCursor() {
   const dotX = useMotionValue(-100);
   const dotY = useMotionValue(-100);
   const ringX = useSpring(useMotionValue(-100), { stiffness: 150, damping: 20 });
   const ringY = useSpring(useMotionValue(-100), { stiffness: 150, damping: 20 });
-  const hovered = useRef(false);
   const ringRef = useRef(null);
+  const [label, setLabel] = useState(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const move = (e) => {
@@ -19,14 +30,29 @@ export default function CustomCursor() {
 
     const over = (e) => {
       const el = e.target;
-      if (el.tagName === "A" || el.tagName === "BUTTON" || el.closest("a") || el.closest("button") || el.dataset.cursor) {
-        hovered.current = true;
+      const labelTarget = el.closest("[data-cursor-text]");
+      const genericTarget = el.closest("a, button") || el.dataset?.cursor;
+
+      if (labelTarget) {
+        setIsHovering(true);
+        setLabel(labelTarget.getAttribute("data-cursor-text"));
+        if (ringRef.current) ringRef.current.classList.add("hovered", "hovered-label");
+      } else if (genericTarget) {
+        setIsHovering(true);
+        setLabel(null);
         if (ringRef.current) ringRef.current.classList.add("hovered");
       }
     };
-    const out = () => {
-      hovered.current = false;
-      if (ringRef.current) ringRef.current.classList.remove("hovered");
+
+    const out = (e) => {
+      const el = e.target;
+      const stillInside =
+        el.closest("[data-cursor-text]") || el.closest("a, button");
+      if (stillInside) return;
+
+      setIsHovering(false);
+      setLabel(null);
+      if (ringRef.current) ringRef.current.classList.remove("hovered", "hovered-label");
     };
 
     window.addEventListener("mousemove", move);
@@ -41,8 +67,27 @@ export default function CustomCursor() {
 
   return (
     <>
-      <motion.div className="cursor-dot" style={{ x: dotX, y: dotY }} />
-      <motion.div ref={ringRef} className="cursor-ring" style={{ x: ringX, y: ringY }} />
+      <motion.div className="cursor-dot" style={{ x: dotX, y: dotY, opacity: label ? 0 : 1 }} />
+      <motion.div
+        ref={ringRef}
+        className="cursor-ring"
+        style={{ x: ringX, y: ringY }}
+      >
+        <AnimatePresence>
+          {label && (
+            <motion.span
+              key={label}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="cursor-label"
+            >
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </>
   );
 }

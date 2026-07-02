@@ -12,6 +12,8 @@ import ContactSection from "./components/ContactSection";
 import ProjectOverlay from "./components/ProjectOverlay";
 import CustomCursor from "./components/CustomCursor";
 import Navbar from "./components/Navbar";
+import GlobalScene from "./components/GlobalScene";
+import ScrollProgress from "./components/ScrollProgress";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -46,14 +48,12 @@ export default function App() {
     }
   }, []);
 
-  // Set up ScrollTrigger for App transitions and Navbar active state
   useEffect(() => {
     if (!loading && mainRef.current) {
       const ctx = gsap.context(() => {
         const sections = gsap.utils.toArray('main > section');
 
         sections.forEach((section, i) => {
-          // Update active section for Navbar
           ScrollTrigger.create({
             trigger: section,
             start: "top center",
@@ -64,7 +64,6 @@ export default function App() {
           });
         });
 
-        // Delay to ensure layout is ready after DOM paints
         setTimeout(() => ScrollTrigger.refresh(), 300);
       }, mainRef);
 
@@ -75,23 +74,24 @@ export default function App() {
   return (
     <>
       <CustomCursor />
+      <ScrollProgress />
       <Navbar activeSection={activeSection} onNavigate={handleNavigate} />
 
-      <div className="noise relative min-h-screen bg-[var(--warm-black)] text-[var(--warm-white)] overflow-x-hidden">
+      <div className="noise relative min-h-screen text-[var(--warm-white)] overflow-x-hidden">
+        <GlobalScene />
+        
         <AnimatePresence>
           {loading && <Preloader onComplete={handlePreloaderComplete} />}
         </AnimatePresence>
 
-        {!loading && (
-          <main ref={mainRef} className="relative z-10">
-            <HeroSection visible={!loading} />
-            <AboutSection ref={aboutRef} />
-            <AboutToProjectsTransition aboutRef={aboutRef} projectsRef={projectsRef} />
-            <ProjectsSection ref={projectsRef} onProjectClick={handleProjectClick} />
-            <BirdTransition />
-            <ContactSection />
-          </main>
-        )}
+        <main ref={mainRef} className="relative z-10 transition-opacity duration-700" style={{ opacity: loading ? 0 : 1, visibility: loading ? 'hidden' : 'visible', height: loading ? '100vh' : 'auto', overflow: loading ? 'hidden' : 'visible' }}>
+          <HeroSection visible={!loading} />
+          <AboutSection ref={aboutRef} />
+          <AboutToProjectsTransition aboutRef={aboutRef} projectsRef={projectsRef} />
+          <ProjectsSection ref={projectsRef} onProjectClick={handleProjectClick} />
+          <BirdTransition />
+          <ContactSection />
+        </main>
       </div>
 
       <AnimatePresence>

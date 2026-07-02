@@ -12,7 +12,7 @@ export const projects = [
     category: "ML",
     year: 2025,
     featured: true,
-    stack: "React / Spring Boot / Python (FastAPI) / .NET / Redis",
+    stack: "React / Spring Boot / Python (FastAPI) / .NET",
     description:
       "End-to-end platform for crop disease detection, yield prediction, and recommendations using a Digital Twin approach.",
     problem:
@@ -38,7 +38,7 @@ export const projects = [
     category: "Blockchain",
     year: 2025,
     featured: true,
-    stack: "Spring Boot / Solidity / Web3j / Polygon / Razorpay",
+    stack: "Spring Boot / Solidity / Web3j / Redis / Razorpay",
     description:
       "A secure, transparent platform for minting and managing digital gold tokens backed by real-world assets.",
     problem:
@@ -63,7 +63,7 @@ export const projects = [
     category: "Full-Stack",
     year: 2024,
     featured: false,
-    stack: "React / Node.js / Express / MongoDB / Solidity / Python",
+    stack: "React / Python (Flask) / Solidity / Truffle",
     description:
       "Tamper-proof maintenance logs for industrial machinery using Blockchain as the source of truth.",
     problem:
@@ -71,7 +71,7 @@ export const projects = [
     approach:
       "I built a proof-of-concept using Blockchain as the 'Source of Truth'. Machine logs were analyzed by a Python service for failure prediction, but the critical maintenance records were anchored on Ethereum. This ensured that once a record was written, no single party could alter it.",
     architecture:
-      "Node.js & Express handled the API orchestration. MongoDB stored operational data for speed. Python (Flask) ran the predictive models. Solidity contracts stored the immutable hashes of maintenance logs to guarantee integrity.",
+      "Python (Flask) handled the API orchestration and predictive models. Solidity contracts stored the immutable hashes of maintenance logs on the blockchain to guarantee integrity. Truffle was used for smart contract development.",
     challenges:
       "Integration was again the main hurdle - coordinating data flow between a standard Node.js backend, a Python analytics service, and the Ethereum blockchain. I also realized during development that a public blockchain isn't ideal for data privacy, highlighting the need for private chains in real enterprise use cases.",
     learned:
@@ -85,7 +85,7 @@ export const projects = [
     image: null,
     tag: "Deep Learning / CV",
     category: "ML",
-    year: 2024,
+    year: 2026,
     featured: true,
     stack: "Python / PyTorch / OpenCV / XGBoost",
     description:
@@ -110,7 +110,7 @@ export const projects = [
     image: null,
     tag: "Productivity / RBAC",
     category: "Full-Stack",
-    year: 2024,
+    year: 2026,
     featured: false,
     stack: "React / Vite / Tailwind / Spring Boot / PostgreSQL",
     description:
@@ -130,37 +130,12 @@ export const projects = [
   },
   {
     id: 6,
-    slug: "rydo-cab-booking",
-    title: "RyDo Cab Booking",
-    image: null,
-    tag: "Web App / Transport",
-    category: "Full-Stack",
-    year: 2023,
-    featured: false,
-    stack: "React / Spring Boot / Java / SQL",
-    description:
-      "A cab booking system integrating a robust Spring Boot backend with a responsive React frontend.",
-    problem:
-      "Building a reliable booking system requires handling concurrent requests and ensuring that a single cab cannot be double-booked by different users at the exact same time.",
-    approach:
-      "I implemented transactional boundaries in the Spring Boot backend to lock rows during the booking process, ensuring data consistency even under concurrent load.",
-    architecture:
-      "Standard 3-tier architecture: React frontend, Spring Boot service layer, and a relational database (SQL) for persistence. REST APIs handle all client-server communication.",
-    challenges:
-      "Managing complex state in React for the multi-step booking process (location selection, cab type, confirmation) was tricky before I refactored to use a centralized context.",
-    learned:
-      "I learned the importance of database transactions and how to handle race conditions in booking systems.",
-    github: "https://github.com/srikarthickeyanganapathy/RyDo",
-    demo: null,
-  },
-  {
-    id: 7,
     slug: "faststream-mobile",
     title: "FastStream Mobile",
     image: null,
     tag: "Browser Extension",
     category: "Tools",
-    year: 2024,
+    year: 2026,
     featured: false,
     stack: "JavaScript / WebExtensions API / HTML5",
     description:
@@ -177,5 +152,30 @@ export const projects = [
       "I learned the intricacies of the modern WebExtensions API, specifically around Manifest V3 security and performance requirements.",
     github: "https://github.com/srikarthickeyanganapathy/FastStream_Mobile",
     demo: null,
+  },
+  {
+    id: 7,
+    slug: "financial-fraud-blockchain",
+    title: "Financial Fraud Detection via Blockchain",
+    image: null,
+    tag: "Blockchain / ML",
+    category: "Blockchain",
+    year: 2024,
+    featured: false,
+    stack: "Python / Solidity / Web3 / Scikit-learn",
+    description:
+      "Analyzes financial transactions using machine learning to detect fraud and predict user behavior, logging results immutably on Ethereum.",
+    problem:
+      "Detecting fraudulent transactions efficiently while ensuring an immutable, tamper-proof record for audits and regulatory compliance.",
+    approach:
+      "Developed a Random Forest Classifier trained on financial datasets, utilizing SMOTE for class imbalance. Identified fraudulent transactions are then logged to a local Ethereum blockchain (Ganache).",
+    architecture:
+      "Python handles data processing and ML inference. A Solidity smart contract stores the transaction hashes. Web3.py bridges the ML model and the blockchain.",
+    challenges:
+      "Handling highly imbalanced synthetic financial data required fine-tuning the Random Forest model and utilizing SMOTE.",
+    learned:
+      "Learned how to integrate predictive machine learning models directly with decentralized ledger technology.",
+    github: null,
+    demo: null
   }
 ];

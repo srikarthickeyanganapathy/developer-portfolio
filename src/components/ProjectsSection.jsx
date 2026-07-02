@@ -2,6 +2,7 @@ import { useRef, useEffect, forwardRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import InteractiveFolderGallery from "./ui/InteractiveFolderGallery";
+import ProjectFilterGrid from "./ui/ProjectFilterGrid";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,9 +34,11 @@ const ProjectsSection = forwardRef(({ onProjectClick }, ref) => {
   }, []);
 
   return (
-    <section ref={resolvedRef} id="projects" className="section section--projects py-20 sm:py-28 overflow-hidden relative">
-      {/* Glow Blob */}
-      <div className="glow-blob w-[500px] h-[500px] -left-64 top-1/2 bg-[var(--glow-primary)] mix-blend-screen" />
+    <section ref={resolvedRef} id="projects" className="section section--projects py-20 sm:py-28 relative">
+      {/* Background Blob Wrapper (clipped to prevent horizontal scroll, while letting the section remain unclipped for 3D underlays) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="glow-blob w-[500px] h-[500px] -left-64 top-1/2 bg-[var(--glow-primary)] mix-blend-screen" />
+      </div>
       
       {/* Header */}
       <div data-transition-target id="projects-header" ref={headerRef} className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-16 mb-8 relative z-10">
@@ -55,6 +58,9 @@ const ProjectsSection = forwardRef(({ onProjectClick }, ref) => {
       <div className="w-full relative z-10">
         <InteractiveFolderGallery onProjectClick={onProjectClick} />
       </div>
+
+      {/* Browsable, filterable grid of every project — complements the folder gallery */}
+      <ProjectFilterGrid onProjectClick={onProjectClick} />
     </section>
   );
 });
