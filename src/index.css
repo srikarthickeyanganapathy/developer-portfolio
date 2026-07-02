@@ -288,6 +288,29 @@ body {
   display: none;
 }
 
+/* ── Skills grid: subtle themed scrollbar instead of default OS scrollbar ── */
+.skills-grid {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(240, 236, 228, 0.15) transparent;
+}
+
+.skills-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.skills-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.skills-grid::-webkit-scrollbar-thumb {
+  background-color: rgba(240, 236, 228, 0.15);
+  border-radius: 4px;
+}
+
+.skills-grid::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(240, 236, 228, 0.3);
+}
+
 .project-overlay__close {
   position: fixed;
   top: 2rem;
@@ -426,6 +449,28 @@ body {
 
   .canvas-container {
     height: 50vh;
+  }
+
+  /* Dive-in section is not pinned on mobile (see AboutSection.jsx matchMedia) —
+     collapse the pinned-scroll runway back down to the natural content height. */
+  .dive-trigger {
+    height: auto;
+  }
+
+  .dive-wrapper {
+    height: auto;
+    overflow: visible;
+  }
+
+  .section--hero,
+  .section--about,
+  .section--projects,
+  .section--contact {
+    min-height: 100svh;
+  }
+
+  .skills-grid {
+    max-height: 55vh;
   }
 }
 

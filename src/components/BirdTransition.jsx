@@ -20,6 +20,10 @@ export default function BirdTransition() {
   useEffect(() => {
     if (prefersReducedMotion === null) return;
 
+    // On mobile, skip the pinned scrub entirely — there's no content to animate here
+    // (see render below), so pinning would just create a dead, "stuck" scroll zone.
+    if (isMobile || prefersReducedMotion) return;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -32,46 +36,44 @@ export default function BirdTransition() {
         }
       });
 
-      if (!prefersReducedMotion && !isMobile) {
-        // Fade out #projects at the start of the scrub
-        tl.to("#projects", {
-          scale: 0.94,
-          opacity: 0,
-          transformOrigin: "center top",
-          ease: "power2.inOut",
-          duration: 0.3
-        }, 0);
+      // Fade out #projects at the start of the scrub
+      tl.to("#projects", {
+        scale: 0.94,
+        opacity: 0,
+        transformOrigin: "center top",
+        ease: "power2.inOut",
+        duration: 0.3
+      }, 0);
 
-        tl.fromTo(".settle-text-1",
-          { scale: 1.5, opacity: 0 },
-          { scale: 1, opacity: 1, ease: "power2.out", duration: 0.2 },
-          0.4
-        );
+      tl.fromTo(".settle-text-1",
+        { scale: 1.5, opacity: 0 },
+        { scale: 1, opacity: 1, ease: "power2.out", duration: 0.2 },
+        0.4
+      );
 
-        tl.to(".settle-text-1", { opacity: 0, duration: 0.05, ease: "none" }, 0.65);
-        tl.fromTo(".settle-text-2",
-          { scale: 1, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.05, ease: "none" },
-          0.65
-        );
+      tl.to(".settle-text-1", { opacity: 0, duration: 0.05, ease: "none" }, 0.65);
+      tl.fromTo(".settle-text-2",
+        { scale: 1, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.05, ease: "none" },
+        0.65
+      );
 
-        tl.to(".settle-text-2", { opacity: 0, scale: 1.1, ease: "power2.in", duration: 0.2 }, 0.8);
+      tl.to(".settle-text-2", { opacity: 0, scale: 1.1, ease: "power2.in", duration: 0.2 }, 0.8);
 
-        // Brief light-leak flash right as Contact arrives — sells the "arrival"
-        tl.fromTo(".transition-light-leak",
-          { opacity: 0 },
-          { opacity: 0.5, duration: 0.12, ease: "power1.in" },
-          0.82
-        );
-        tl.to(".transition-light-leak", { opacity: 0, duration: 0.3, ease: "power2.out" }, 0.94);
+      // Brief light-leak flash right as Contact arrives — sells the "arrival"
+      tl.fromTo(".transition-light-leak",
+        { opacity: 0 },
+        { opacity: 0.5, duration: 0.12, ease: "power1.in" },
+        0.82
+      );
+      tl.to(".transition-light-leak", { opacity: 0, duration: 0.3, ease: "power2.out" }, 0.94);
 
-        // Fade in #contact at the very end
-        tl.fromTo("#contact", 
-          { scale: 0.95, opacity: 0 },
-          { scale: 1, opacity: 1, transformOrigin: "center bottom", ease: "power2.inOut", duration: 0.15 },
-          0.85
-        );
-      }
+      // Fade in #contact at the very end
+      tl.fromTo("#contact",
+        { scale: 0.95, opacity: 0 },
+        { scale: 1, opacity: 1, transformOrigin: "center bottom", ease: "power2.inOut", duration: 0.15 },
+        0.85
+      );
     });
 
     return () => ctx.revert();
@@ -80,7 +82,7 @@ export default function BirdTransition() {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full ${isMobile ? 'h-[60vh]' : 'h-[100vh]'} flex items-center justify-center overflow-hidden pointer-events-none z-20`}
+      className={`relative w-full ${isMobile ? 'h-[15vh]' : 'h-[100vh]'} flex items-center justify-center overflow-hidden pointer-events-none z-20`}
     >
       {/* Light-leak flash, fires as Contact settles in */}
       <div

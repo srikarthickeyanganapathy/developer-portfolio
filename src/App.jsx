@@ -17,6 +17,11 @@ import ScrollProgress from "./components/ScrollProgress";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Mobile browsers resize the viewport when the address bar collapses/expands
+// on scroll. Without this, GSAP would treat that as a real resize and
+// recalculate every ScrollTrigger mid-scroll, causing visible jumps.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);

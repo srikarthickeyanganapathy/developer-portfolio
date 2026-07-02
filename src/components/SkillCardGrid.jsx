@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 
 export default function SkillCardGrid({ skills }) {
   return (
-    <div className="skills-grid space-y-4" style={{ transformStyle: "preserve-3d" }}>
+    <div
+      className="skills-grid space-y-3 self-start max-h-[75vh] overflow-y-auto pr-2 -mr-2"
+      style={{ transformStyle: "preserve-3d", scrollbarWidth: "thin" }}
+    >
       {skills.map((group) => {
         return (
           // NOTE: initial rotateY(90deg)/opacity(0) state + the flip-in animation
@@ -13,29 +16,29 @@ export default function SkillCardGrid({ skills }) {
           // animation here — it will fight the scrub.
           <div key={group.category} className="skill-card" style={{ transformStyle: "preserve-3d" }}>
             <TiltCard intensity={0.1} maxTilt={8} className="w-full">
-              <div className="w-full rounded-xl glass-panel glass-hover p-6 transition-colors duration-500">
-                <div className="mb-4">
+              <div className="w-full rounded-xl glass-panel glass-hover p-5 transition-colors duration-500">
+                <div className="mb-3">
                   <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--warm-dim)]">
                     {group.category}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {group.items.map((item) => {
                     const label = typeof item === "string" ? item : item.name;
                     const level = typeof item === "string" ? null : item.level; // 1-3
                     return (
                       <span
                         key={label}
-                        className="glass-chip px-3 py-1.5 text-[11px] text-[var(--warm-white)]/90 rounded-full font-medium font-mono inline-flex items-center gap-1.5"
+                        className="glass-chip px-2.5 py-1 text-[10px] text-[var(--warm-white)]/90 rounded-full font-medium font-mono inline-flex items-center gap-1"
                       >
                         {label}
                         {level && (
-                          <span className="inline-flex gap-[3px]" aria-hidden="true">
+                          <span className="inline-flex gap-[2px]" aria-hidden="true">
                             {[1, 2, 3].map((dot) => (
                               <span
                                 key={dot}
-                                className="w-1 h-1 rounded-full"
+                                className="w-[3px] h-[3px] rounded-full"
                                 style={{
                                   background: dot <= level ? "var(--accent)" : "var(--warm-white)",
                                   opacity: dot <= level ? 1 : 0.15,

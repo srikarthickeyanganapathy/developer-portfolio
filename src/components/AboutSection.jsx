@@ -91,74 +91,118 @@ const AboutSection = forwardRef((props, ref) => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Enhanced Dive-in transition: multi-layer depth for a true "falling into the screen" feel
-      const diveTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: diveRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.5,
-          pin: true,
-          anticipatePin: 1,
-          refreshPriority: 2,
-        },
+      const mm = gsap.matchMedia();
+
+      // ── Desktop / tablet: full pinned "dive in" warp effect ──
+      mm.add("(min-width: 768px)", () => {
+        const diveTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: diveRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.5,
+            pin: true,
+            anticipatePin: 1,
+            refreshPriority: 2,
+          },
+        });
+
+        // Vignette + chromatic/blur "warp" — sharpest right as content lands
+        diveTl.fromTo(
+          ".dive-vignette",
+          {
+            opacity: 0,
+            boxShadow: "inset 0 0 20px 10px rgba(8, 8, 8, 0)",
+            filter: "blur(0px) hue-rotate(0deg)",
+          },
+          {
+            opacity: 0.8,
+            boxShadow: "inset 0 0 80px 40px rgba(8, 8, 8, 0.8)",
+            filter: "blur(6px) hue-rotate(8deg)",
+            duration: 0.35,
+            ease: "none",
+          }
+        );
+
+        // Layer 1 (furthest back) — ambient glow, slowest / largest scale swing
+        diveTl.fromTo(
+          bgGlowRef.current,
+          { scale: 1.6, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.9, ease: "power2.out" },
+          0.05
+        );
+
+        // Layer 2 (mid) — heading, arrives first and fastest
+        diveTl.fromTo(
+          headingRef.current,
+          { scale: 0.8, opacity: 0, z: -60, filter: "blur(4px)" },
+          { scale: 1, opacity: 1, z: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
+          0.15
+        );
+
+        // Layer 3 (nearest) — body copy + skill cards, deepest start, lands last
+        diveTl.fromTo(
+          bodyRef.current,
+          { scale: 0.7, opacity: 0, z: -140, filter: "blur(8px)" },
+          { scale: 1, opacity: 1, z: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+          0.28
+        );
+
+        // Skill cards: 3D flip-in, staggered, tied to the same scrub
+        diveTl.fromTo(
+          ".skill-card",
+          { rotateY: 90, opacity: 0, transformPerspective: 800 },
+          { rotateY: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: "power2.out" },
+          0.4
+        );
+
+        // Vignette clears once everything has landed
+        diveTl.to(
+          ".dive-vignette",
+          { opacity: 0, filter: "blur(0px) hue-rotate(0deg)", duration: 0.4, ease: "none" },
+          0.65
+        );
       });
 
-      // Vignette + chromatic/blur "warp" — sharpest right as content lands
-      diveTl.fromTo(
-        ".dive-vignette",
-        {
+      // ── Mobile: no pin, no vignette warp (mobile browser chrome collapsing
+      // mid-pin causes visible jumps, and a 150vh pinned runway wastes scroll
+      // distance on a short viewport). Just a quick, cheap fade/slide reveal. ──
+      mm.add("(max-width: 767px)", () => {
+        gsap.set(".dive-vignette", { opacity: 0 });
+
+        gsap.from(bgGlowRef.current, {
           opacity: 0,
-          boxShadow: "inset 0 0 20px 10px rgba(8, 8, 8, 0)",
-          filter: "blur(0px) hue-rotate(0deg)",
-        },
-        {
-          opacity: 0.8,
-          boxShadow: "inset 0 0 80px 40px rgba(8, 8, 8, 0.8)",
-          filter: "blur(6px) hue-rotate(8deg)",
-          duration: 0.35,
-          ease: "none",
-        }
-      );
+          duration: 0.6,
+          scrollTrigger: { trigger: diveRef.current, start: "top 85%" },
+        });
 
-      // Layer 1 (furthest back) — ambient glow, slowest / largest scale swing
-      diveTl.fromTo(
-        bgGlowRef.current,
-        { scale: 1.6, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.9, ease: "power2.out" },
-        0.05
-      );
+        gsap.from(headingRef.current, {
+          y: 24,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: { trigger: headingRef.current, start: "top 88%" },
+        });
 
-      // Layer 2 (mid) — heading, arrives first and fastest
-      diveTl.fromTo(
-        headingRef.current,
-        { scale: 0.8, opacity: 0, z: -60, filter: "blur(4px)" },
-        { scale: 1, opacity: 1, z: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
-        0.15
-      );
+        gsap.from(bodyRef.current, {
+          y: 24,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: { trigger: bodyRef.current, start: "top 90%" },
+        });
 
-      // Layer 3 (nearest) — body copy + skill cards, deepest start, lands last
-      diveTl.fromTo(
-        bodyRef.current,
-        { scale: 0.7, opacity: 0, z: -140, filter: "blur(8px)" },
-        { scale: 1, opacity: 1, z: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
-        0.28
-      );
+        gsap.from(".skill-card", {
+          y: 16,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: { trigger: ".skills-grid", start: "top 90%" },
+        });
+      });
 
-      // Skill cards: 3D flip-in, staggered, tied to the same scrub
-      diveTl.fromTo(
-        ".skill-card",
-        { rotateY: 90, opacity: 0, transformPerspective: 800 },
-        { rotateY: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: "power2.out" },
-        0.4
-      );
-
-      // Vignette clears once everything has landed
-      diveTl.to(
-        ".dive-vignette",
-        { opacity: 0, filter: "blur(0px) hue-rotate(0deg)", duration: 0.4, ease: "none" },
-        0.65
-      );
+      return () => mm.revert();
     }, resolvedRef);
 
     return () => ctx.revert();
